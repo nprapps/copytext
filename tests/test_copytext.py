@@ -114,6 +114,30 @@ class RowTestCase(unittest.TestCase):
         self.assertTrue(isinstance(error, copytext.Error))
         self.assertEquals(error._error, 'COPY.content.1.2 [column index outside range]')
 
+class CellTypeTestCase(unittest.TestCase):
+    """
+    Test various cell "types".
+
+    NB: These tests are fake. They only work if the input data is formatted as text.
+
+    Things which are actually non-string don't work and can't be supported.
+    """
+    def setUp(self):
+        copy = copytext.Copy('examples/test_copy.xlsx')
+        self.sheet = copy['attribution']
+
+    def test_date(self):
+        row = self.sheet['pubdate']
+        val = repr(row)
+
+        self.assertEquals(val, '1/22/2013')
+
+    def test_time(self):
+        row = self.sheet['pubtime']
+        val = repr(row)
+
+        self.assertEqual(val, '3:37 AM')
+
 class DummyCellWrapper(unicode):
     """
     Example of a cell wrapper class. A psuedo-implementation

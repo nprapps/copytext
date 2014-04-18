@@ -1,0 +1,11 @@
+0.1.1
+-----
+
+* First draft of docs. (#4)
+* Explicit handling of fields with dates/numbers. (#8)
+* Tests for unicode support. (#1)
+
+0.1.0
+-----
+
+* Initial import.
