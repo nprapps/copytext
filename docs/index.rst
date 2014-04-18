@@ -101,10 +101,14 @@ Probably the most significant use case for copytext is as an input to a template
 
 Your view::
 
+    from flask import Markup, render_template
+
+    import copytext
+
     @app.route('/')
     def index():
         context = {
-            'COPY': copytext.Copy('examples/test_copy.xlsx')
+            'COPY': copytext.Copy('examples/test_copy.xlsx', cell_wrapper_cls=Markup)
         }
 
         return render_template('index.html', context)
