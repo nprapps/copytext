@@ -36,6 +36,7 @@ Usage
 
     import copytext
 
+    # Instantiate our copy, this parses the XLSX workbook
     copy = copytext.Copy('examples/test_copy.xlsx')
 
     # Get a sheet named "content"
@@ -47,10 +48,10 @@ Usage
     # Print the value where the "key" is named "lorem_ipsum"
     print sheet['lorem_ipsum']
 
-    # Print the value in the third row (including headers)
+    # Print the value in the third row (counting headers)
     print sheet[2]
 
-    # But the rows themselves are also objects
+    # The rows themselves are also objects
     row = sheet['lorem_ipsum']
     
     # You can access the columns by indexing into the row
@@ -63,10 +64,10 @@ Usage
 
     # You can also iterate over rows
     for row in sheet:
-        # Print all the values
+        # Print the value
         print row
 
-        # Print the key/value pairs
+        # Print the key/value pair
         print row['key'], row['value']
 
     # This sheet has "term" and "definition" columns, but no "key"
@@ -83,7 +84,7 @@ Usage
 
 .. note::
 
-    Copytext only understands `xlsx` files, and all cells must be converted to text formatting. It does not grok dates or numbers.
+    Copytext only understands **xlsx** files, and all cells must be converted to text formatting. Copytext does not grok dates or numbers.
 
 License
 =======

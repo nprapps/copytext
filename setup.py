@@ -9,7 +9,7 @@ setup(
     long_description=open('README').read(),
     author='NPR Visuals Team',
     author_email='nprapps@npr.org',
-    url='http://blog.apps.npr.org/',
+    url='http://copytext.readthedocs.org/',
     license='MIT',
     classifiers=[
         'Development Status :: 4 - Beta',
