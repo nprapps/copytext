@@ -1,0 +1,10 @@
+*.pyc
+*.swp
+.DS_Store
+build
+copytext.egg-info
+reference
+dist
+*.swo
+docs/_build
+.tox
