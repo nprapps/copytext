@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-#from flask import Markup
 from openpyxl.reader.excel import load_workbook
 
 class CopyException(Exception):
