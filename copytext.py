@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Markup
+#from flask import Markup
 from openpyxl.reader.excel import load_workbook
 
 class CopyException(Exception):
@@ -50,12 +50,12 @@ class Row(object):
             if i >= len(self._row):
                 return Error('COPY.%s.%i.%i [column index outside range]' % (self._sheet.name, self._index, i))
 
-            return Markup(self._row[i])
+            return self._row[i]
 
         if i not in self._columns:
             return Error('COPY.%s.%i.%s [column does not exist in sheet]' % (self._sheet.name, self._index, i))
 
-        return Markup(self._row[self._columns.index(i)])
+        return self._row[self._columns.index(i)]
 
     def __iter__(self):
         return iter(self._row)
@@ -65,7 +65,7 @@ class Row(object):
 
     def __repr__(self):
         if 'value' in self._columns:
-            return Markup(self._row[self._columns.index('value')])
+            return self._row[self._columns.index('value')]
 
         return Error('COPY.%s.%s [no value column in sheet]' % (self._sheet.name, self._row[self._columns.index('key')])) 
 
@@ -114,8 +114,9 @@ class Copy(object):
     _filename = ''
     _copy = {}
 
-    def __init__(self, filename='data/copy.xlsx'):
+    def __init__(self, filename, text_filter=None):
         self._filename = filename
+        self._text_filter = text_filter or (lambda x: x)
         self.load()
 
     def __getitem__(self, name):
@@ -141,11 +142,10 @@ class Copy(object):
             rows = []
 
             for i, row in enumerate(sheet.rows):
-                row_data = [c.internal_value for c in row]
+                row_data = [self._text_filter(c.internal_value) for c in row]
 
                 if i == 0:
                     columns = row_data 
-                    continue
 
                 # If nothing in a row then it doesn't matter
                 if all([c is None for c in row_data]):
