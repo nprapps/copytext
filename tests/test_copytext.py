@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import json
-import unittest
+import unittest2 as unittest
 
 import copytext
 
@@ -114,8 +114,10 @@ class RowTestCase(unittest.TestCase):
         self.assertEquals(error._error, 'COPY.content.1.2 [column index outside range]')
 
 class DummyCellWrapper(unicode):
-    def __init__(self, text):
-        super(DummyCellWrapper, self).__init__(text)
+    def __new__(cls, text):
+        self = super(DummyCellWrapper, cls).__new__(cls, text)
+
+        return self
 
     def __html__(self):
         return '<strong>%s</strong>' % self.__str__() 

@@ -21,9 +21,7 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    packages=[
-        'copytext'
-    ],
+    py_modules=['copytext'],
     install_requires = [
         'openpyxl>=1.8.5',
     ]
