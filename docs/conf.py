@@ -218,12 +218,3 @@ man_pages = [
 #     [u'Christopher Groskopf'], 1),
 ]
 
-for filename in os.listdir('scripts'):
-    name = os.path.splitext(filename)[0]
-    man_pages.append((
-        os.path.join('scripts', name),
-        name,
-        '%s Documentation' % name,
-        [u'Christopher Groskopf'],
-        1
-    ))
