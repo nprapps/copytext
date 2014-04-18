@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import json
 import unittest2 as unittest
@@ -37,7 +38,7 @@ class CopyTestCase(unittest.TestCase):
 
         self.assertIsInstance(attribution, dict)
         self.assertTrue('byline' in attribution)
-        self.assertEqual(attribution['byline'], 'Name Here')
+        self.assertEqual(attribution['byline'], u'Uñicodë')
 
         example_list = data['example_list']
 
@@ -114,13 +115,17 @@ class RowTestCase(unittest.TestCase):
         self.assertEquals(error._error, 'COPY.content.1.2 [column index outside range]')
 
 class DummyCellWrapper(unicode):
+    """
+    Example of a cell wrapper class. A psuedo-implementation
+    of Flask's Markup class.
+    """
     def __new__(cls, text):
         self = super(DummyCellWrapper, cls).__new__(cls, text)
 
         return self
 
     def __html__(self):
-        return '<strong>%s</strong>' % self.__str__() 
+        return u'<strong>%s</strong>' % self 
 
 class CellWrapperTestCase(unittest.TestCase):
     """
@@ -135,6 +140,7 @@ class CellWrapperTestCase(unittest.TestCase):
         cell = self.row['value']
 
         self.assertTrue(isinstance(cell, DummyCellWrapper))
+        self.assertTrue(isinstance(cell, unicode))
         self.assertEqual(cell, 'Across-The-Top Header')
         self.assertEqual(cell.__html__(), '<strong>Across-The-Top Header</strong>')
 
