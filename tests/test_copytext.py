@@ -113,6 +113,28 @@ class RowTestCase(unittest.TestCase):
         self.assertTrue(isinstance(error, copytext.Error))
         self.assertEquals(error._error, 'COPY.content.1.2 [column index outside range]')
 
+class DummyCellWrapper(object):
+    def __init__(self, text):
+        self._text = text
+
+    def __repr__(self):
+        return self._text
+
+class CellWrapperTestCase(unittest.TestCase):
+    """
+    Test the optional cell filter.
+    """
+    def setUp(self):
+        copy = copytext.Copy('examples/test_copy.xlsx', cell_wrapper_cls=self.DummyCellWrapper)
+        sheet = copy['content']
+        self.row = sheet['header_title']
+
+    def test_wrapper_applied(self):
+        cell = self.row['value']
+
+        self.asserTrue(isinstance(cell, DummyCellWrapper))
+        self.assertEqual(cell, 'Across-The-Top Header')
+
 class ErrorTestCase(unittest.TestCase):
     """
     Test for Error object.
