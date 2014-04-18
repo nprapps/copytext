@@ -32,6 +32,14 @@ If you are a developer that also wants to hack on copytext, install it this way:
 Usage
 =====
 
+Here is an example spreadsheet:
+
+.. raw:: html
+    
+    <iframe width="600px" height="200px" src="https://docs.google.com/spreadsheets/d/10XiE39UYJ7aEMTlx3XVn9OoDPn4eFU4EiX6bIzgk3OA/pubhtml?widget=true&amp;headers=false"></iframe>
+
+And here is code using this data:
+
 ::
 
     import copytext
@@ -84,7 +92,39 @@ Usage
 
 .. note::
 
-    Copytext only understands **xlsx** files, and all cells must be converted to text formatting. Copytext does not grok dates or numbers.
+    Copytext only understands ``xlsx`` files, and all cells must be converted to text formatting. Copytext does not grok dates or numbers.
+
+Using with Flask
+================
+
+Probably the most significant use case for copytext is as an input to a template system. For example, here is how you would use it with Flask's Jinja-based templates:
+
+Your view::
+
+    @app.route('/')
+    def index():
+        context = {
+            'COPY': copytext.Copy('examples/test_copy.xlsx')
+        }
+
+        return render_template('index.html', context)
+
+And in your template::
+
+    <header>
+        <h1>{{ COPY.content.header_title }}</h1>
+        <h2>{{ COPY.content.lorem_ipsum }}</h2>
+    </header>
+
+    <dl>
+        {% for row in COPY.example_list %}
+        <dt>{{ row.term }}</dt><dd>{{ row.definition }}</dd>
+        {% endfor %}
+    </dl>
+
+.. note::
+
+    Jinja templates automatically proxy attribute access to property access, which is why you see ``row.term`` instead of ``row['term']`` in these examples. This means you can also do ``row.0`` to access the first column.
 
 License
 =======
