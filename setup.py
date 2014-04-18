@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name='copytext',
     version='0.1.0',
-    description='A tool for accessing a spreadsheet as a series of nested keys.',
+    description='A library for accessing a spreadsheet as a native Python object suitable for templating.',
     long_description=open('README').read(),
     author='NPR Visuals Team',
     author_email='nprapps@npr.org',
