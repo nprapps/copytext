@@ -111,7 +111,7 @@ Your view::
             'COPY': copytext.Copy('examples/test_copy.xlsx', cell_wrapper_cls=Markup)
         }
 
-        return render_template('index.html', context)
+        return render_template('index.html', **context)
 
 And in your template::
 
