@@ -76,7 +76,7 @@ class SheetTestCase(unittest.TestCase):
         self.assertTrue(isinstance(error, copytext.Error))
         self.assertEquals(error._error, 'COPY.content.65 [row index outside range]')
 
-class RowTestCase(unittest.TestCase):
+class KeyValueRowTestCase(unittest.TestCase):
     """
     Test the Row object.
     """
@@ -89,6 +89,11 @@ class RowTestCase(unittest.TestCase):
         cell = repr(self.row)
         self.assertTrue(isinstance(cell, basestring))
         self.assertEqual(cell, 'Across-The-Top Header')
+
+    def test_null_cell_value_repr(self):
+        row = self.sheet['nothing']
+        self.assertIs(True if row else False, False)
+        self.assertIs(True if row[1] else False, False)
 
     def test_cell_by_index(self):
         cell = self.row[1]
@@ -117,6 +122,32 @@ class RowTestCase(unittest.TestCase):
     def test_row_truthiness(self):
         self.assertIs(True if self.sheet['foo'] else False, False)
         self.assertIs(True if self.sheet['header_title'] else False, True)
+
+class ListRowTestCase(unittest.TestCase):
+    def setUp(self):
+        copy = copytext.Copy('examples/test_copy.xlsx')
+        self.sheet = copy['example_list']
+
+    def test_iteration(self):
+        i = iter(self.sheet)
+        row = i.next()
+
+        self.assertEqual(row[0], 'term')
+        self.assertEqual(row[1], 'definition')
+
+        row = i.next()
+
+        self.assertEqual(row[0], 'jabberwocky')
+        self.assertEqual(row[1], 'Invented or meaningless language; nonsense.')
+
+    def test_row_truthiness(self):
+        row = self.sheet[0]
+
+        self.assertIs(True if row else False, True)
+        
+        row = self.sheet[100]
+        
+        self.assertIs(True if row else False, False)
 
 class CellTypeTestCase(unittest.TestCase):
     """

@@ -29,6 +29,20 @@ class Error(object):
     def __nonzero__(self):
         return False 
 
+class Cell(unicode):
+    """
+    Wraps a single cell to allow for null-checking
+    prior to string transformation.
+    """
+    def __new__(cls, text):
+        self = super(Cell, cls).__new__(cls, text)
+        self.value = text
+
+        return self
+
+    def __nonzero__(self):
+        return bool(self.value)
+
 class Row(object):
     """
     Wraps a row of copy for error handling.
@@ -52,12 +66,12 @@ class Row(object):
             if i >= len(self._row):
                 return Error('COPY.%s.%i.%i [column index outside range]' % (self._sheet.name, self._index, i))
 
-            return self._sheet._cell_wrapper_cls(self._row[i])
+            return self._sheet._cell_wrapper_cls(Cell(self._row[i]))
 
         if i not in self._columns:
             return Error('COPY.%s.%i.%s [column does not exist in sheet]' % (self._sheet.name, self._index, i))
 
-        return self._sheet._cell_wrapper_cls(self._row[self._columns.index(i)])
+        return self._sheet._cell_wrapper_cls(Cell(self._row[self._columns.index(i)]))
 
     def __iter__(self):
         return iter(self._row)
@@ -67,9 +81,20 @@ class Row(object):
 
     def __repr__(self):
         if 'value' in self._columns:
-            return self._sheet._cell_wrapper_cls(self._row[self._columns.index('value')])
+            return self._sheet._cell_wrapper_cls(Cell(self._row[self._columns.index('value')]))
 
         return Error('COPY.%s.%s [no value column in sheet]' % (self._sheet.name, self._row[self._columns.index('key')])) 
+
+    def __nonzero__(self):
+        if 'value' in self._columns:
+            val = self._row[self._columns.index('value')]
+
+            if not val:
+                return False 
+
+            return len(val)
+    
+        return True
 
 class Sheet(object):
     """
