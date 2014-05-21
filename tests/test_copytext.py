@@ -82,8 +82,8 @@ class RowTestCase(unittest.TestCase):
     """
     def setUp(self):
         copy = copytext.Copy('examples/test_copy.xlsx')
-        sheet = copy['content']
-        self.row = sheet['header_title']
+        self.sheet = copy['content']
+        self.row = self.sheet['header_title']
 
     def test_cell_by_value_repr(self):
         cell = repr(self.row)
@@ -113,6 +113,10 @@ class RowTestCase(unittest.TestCase):
         error = self.row[2]
         self.assertTrue(isinstance(error, copytext.Error))
         self.assertEquals(error._error, 'COPY.content.1.2 [column index outside range]')
+
+    def test_row_truthiness(self):
+        self.assertIs(True if self.sheet['foo'] else False, False)
+        self.assertIs(True if self.sheet['header_title'] else False, True)
 
 class CellTypeTestCase(unittest.TestCase):
     """
@@ -199,3 +203,6 @@ class ErrorTestCase(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(str(self.error), 'foobar')
+
+    def test_falsey(self):
+        self.assertIs(True if self.error else False, False)

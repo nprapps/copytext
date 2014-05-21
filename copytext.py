@@ -26,6 +26,9 @@ class Error(object):
     def __repr__(self):
         return self._error
 
+    def __nonzero__(self):
+        return False 
+
 class Row(object):
     """
     Wraps a row of copy for error handling.
