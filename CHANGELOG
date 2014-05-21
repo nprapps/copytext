@@ -1,3 +1,8 @@
+0.1.2
+-----
+
+* Errors and rows can now test false. (#14)
+
 0.1.1
 -----
 

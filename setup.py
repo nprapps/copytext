@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='copytext',
-    version='0.1.1',
+    version='0.1.2',
     description='A library for accessing a spreadsheet as a native Python object suitable for templating.',
     long_description=open('README').read(),
     author='NPR Visuals Team',
