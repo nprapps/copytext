@@ -4,6 +4,8 @@
 import json
 import unittest2 as unittest
 
+from markupsafe import Markup
+
 import copytext
 
 class CopyTestCase(unittest.TestCase):
@@ -173,35 +175,28 @@ class CellTypeTestCase(unittest.TestCase):
 
         self.assertEqual(val, '3:37 AM')
 
-class DummyCellWrapper(unicode):
+class CellTestCase(unittest.TestCase):
     """
-    Example of a cell wrapper class. A psuedo-implementation
-    of Flask's Markup class.
+    Test the cell wrapper.
     """
-    def __new__(cls, text):
-        self = super(DummyCellWrapper, cls).__new__(cls, text)
+    def test_markup(self):
+        cell = copytext.Cell('<strong>Fight me</strong>')
 
-        return self
-
-    def __html__(self):
-        return u'<strong>%s</strong>' % self 
-
-class CellWrapperTestCase(unittest.TestCase):
-    """
-    Test the optional cell filter.
-    """
-    def setUp(self):
-        copy = copytext.Copy('examples/test_copy.xlsx', cell_wrapper_cls=DummyCellWrapper)
-        sheet = copy['content']
-        self.row = sheet['header_title']
-
-    def test_wrapper_applied(self):
-        cell = self.row['value']
-
-        self.assertTrue(isinstance(cell, DummyCellWrapper))
+        self.assertTrue(isinstance(cell, copytext.Cell))
+        self.assertTrue(isinstance(cell, Markup))
         self.assertTrue(isinstance(cell, unicode))
-        self.assertEqual(cell, 'Across-The-Top Header')
-        self.assertEqual(cell.__html__(), '<strong>Across-The-Top Header</strong>')
+        self.assertEqual(unicode(cell), '<strong>Fight me</strong>')
+        self.assertEqual(cell.__html__(), '<strong>Fight me</strong>')
+
+    def test_nullable(self):
+        cell = copytext.Cell('Thing')
+        self.assertIs(True if cell else False, True)
+
+        cell = copytext.Cell('')
+        self.assertIs(True if cell else False, False)
+
+        cell = copytext.Cell(None)
+        self.assertIs(True if cell else False, False)
 
 class ErrorTestCase(unittest.TestCase):
     """

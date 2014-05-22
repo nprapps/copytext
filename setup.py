@@ -24,5 +24,6 @@ setup(
     py_modules=['copytext'],
     install_requires = [
         'openpyxl>=1.8.5',
+        'MarkupSafe>=0.21'
     ]
 )

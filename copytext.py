@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from markupsafe import Markup
 from openpyxl.reader.excel import load_workbook
 
 class CopyException(Exception):
@@ -29,19 +30,19 @@ class Error(object):
     def __nonzero__(self):
         return False 
 
-class Cell(unicode):
+class Cell(Markup):
     """
     Wraps a single cell to allow for null-checking
     prior to string transformation.
     """
-    def __new__(cls, text):
-        self = super(Cell, cls).__new__(cls, text)
-        self.value = text
+    def __new__(cls, base=u'', encoding=None, errors='strict'):
+        markup = Markup.__new__(cls, base, encoding, errors)
+        markup.is_null = base is None
 
-        return self
+        return markup
 
     def __nonzero__(self):
-        return bool(self.value)
+        return (not self.is_null) and len(self) != 0
 
 class Row(object):
     """
@@ -66,12 +67,12 @@ class Row(object):
             if i >= len(self._row):
                 return Error('COPY.%s.%i.%i [column index outside range]' % (self._sheet.name, self._index, i))
 
-            return self._sheet._cell_wrapper_cls(Cell(self._row[i]))
+            return Cell(self._row[i])
 
         if i not in self._columns:
             return Error('COPY.%s.%i.%s [column does not exist in sheet]' % (self._sheet.name, self._index, i))
 
-        return self._sheet._cell_wrapper_cls(Cell(self._row[self._columns.index(i)]))
+        return Cell(self._row[self._columns.index(i)])
 
     def __iter__(self):
         return iter(self._row)
@@ -81,7 +82,7 @@ class Row(object):
 
     def __repr__(self):
         if 'value' in self._columns:
-            return self._sheet._cell_wrapper_cls(Cell(self._row[self._columns.index('value')]))
+            return Cell(self._row[self._columns.index('value')])
 
         return Error('COPY.%s.%s [no value column in sheet]' % (self._sheet.name, self._row[self._columns.index('key')])) 
 
@@ -104,11 +105,10 @@ class Sheet(object):
     _sheet = []
     _columns = []
 
-    def __init__(self, name, data, columns, cell_wrapper_cls):
+    def __init__(self, name, data, columns):
         self.name = name
         self._sheet = [Row(self, [row[c] for c in columns], columns, i) for i, row in enumerate(data)]
         self._columns = columns
-        self._cell_wrapper_cls = cell_wrapper_cls
 
     def __getitem__(self, i):
         """
@@ -142,9 +142,8 @@ class Copy(object):
     _filename = ''
     _copy = {}
 
-    def __init__(self, filename, cell_wrapper_cls=None):
+    def __init__(self, filename):
         self._filename = filename
-        self._cell_wrapper_cls = cell_wrapper_cls or (lambda x: x)
         self.load()
 
     def __getitem__(self, name):
@@ -181,7 +180,7 @@ class Copy(object):
 
                 rows.append(dict(zip(columns, row_data)))
 
-            self._copy[sheet.title] = Sheet(sheet.title, rows, columns, cell_wrapper_cls=self._cell_wrapper_cls)
+            self._copy[sheet.title] = Sheet(sheet.title, rows, columns)
 
     def json(self):
         """
