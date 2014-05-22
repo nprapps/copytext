@@ -27,7 +27,7 @@ If you are a developer that also wants to hack on copytext, install it this way:
     mkvirtualenv --no-site-packages copytext
     pip install -r requirements.txt
     python setup.py develop
-    nosetests
+    nosetests --with-coverage --cover-package=copytext
 
 Usage
 =====
@@ -125,6 +125,8 @@ And in your template::
         <dt>{{ row.term }}</dt><dd>{{ row.definition }}</dd>
         {% endfor %}
     </dl>
+
+copytext automatically marks all strings as safe (``Markup`` in Jinja parlance).
 
 .. note::
 
