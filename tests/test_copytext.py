@@ -87,24 +87,24 @@ class KeyValueRowTestCase(unittest.TestCase):
         self.sheet = copy['content']
         self.row = self.sheet['header_title']
 
-    def test_cell_by_value_repr(self):
-        cell = repr(self.row)
-        self.assertTrue(isinstance(cell, basestring))
+    def test_cell_by_value_unicode(self):
+        cell = unicode(self.row)
+        self.assertTrue(isinstance(cell, Markup))
         self.assertEqual(cell, 'Across-The-Top Header')
 
-    def test_null_cell_value_repr(self):
+    def test_null_cell_value(self):
         row = self.sheet['nothing']
         self.assertIs(True if row else False, False)
         self.assertIs(True if row[1] else False, False)
 
     def test_cell_by_index(self):
         cell = self.row[1]
-        self.assertTrue(isinstance(cell, basestring))
+        self.assertTrue(isinstance(cell, Markup))
         self.assertEqual(cell, 'Across-The-Top Header')
 
     def test_cell_by_item_name(self):
         cell = self.row['value']
-        self.assertTrue(isinstance(cell, basestring))
+        self.assertTrue(isinstance(cell, Markup))
         self.assertEqual(cell, 'Across-The-Top Header')
 
     def test_cell_by_prop_name(self):
@@ -151,6 +151,20 @@ class ListRowTestCase(unittest.TestCase):
         
         self.assertIs(True if row else False, False)
 
+class MarkupTestCase(unittest.TestCase):
+    """
+    Test strings get Markup'd.
+    """
+    def setUp(self):
+        copy = copytext.Copy('examples/test_copy.xlsx')
+        self.sheet = copy['content']
+
+    def test_markup(self):
+        cell = unicode(self.sheet['footer_title'])
+
+        self.assertTrue(isinstance(cell, Markup))
+        self.assertEqual(cell, '<strong>This content goes to 12</strong>')
+
 class CellTypeTestCase(unittest.TestCase):
     """
     Test various cell "types".
@@ -165,38 +179,15 @@ class CellTypeTestCase(unittest.TestCase):
 
     def test_date(self):
         row = self.sheet['pubdate']
-        val = repr(row)
+        val = unicode(row)
 
         self.assertEquals(val, '1/22/2013')
 
     def test_time(self):
         row = self.sheet['pubtime']
-        val = repr(row)
+        val = unicode(row)
 
         self.assertEqual(val, '3:37 AM')
-
-class CellTestCase(unittest.TestCase):
-    """
-    Test the cell wrapper.
-    """
-    def test_markup(self):
-        cell = copytext.Cell('<strong>Fight me</strong>')
-
-        self.assertTrue(isinstance(cell, copytext.Cell))
-        self.assertTrue(isinstance(cell, Markup))
-        self.assertTrue(isinstance(cell, unicode))
-        self.assertEqual(unicode(cell), '<strong>Fight me</strong>')
-        self.assertEqual(cell.__html__(), '<strong>Fight me</strong>')
-
-    def test_nullable(self):
-        cell = copytext.Cell('Thing')
-        self.assertIs(True if cell else False, True)
-
-        cell = copytext.Cell('')
-        self.assertIs(True if cell else False, False)
-
-        cell = copytext.Cell(None)
-        self.assertIs(True if cell else False, False)
 
 class ErrorTestCase(unittest.TestCase):
     """
@@ -227,7 +218,7 @@ class ErrorTestCase(unittest.TestCase):
     def test_len(self):
         self.assertEqual(len(self.error), 1)
 
-    def test_repr(self):
+    def test_unicode(self):
         self.assertEqual(str(self.error), 'foobar')
 
     def test_falsey(self):

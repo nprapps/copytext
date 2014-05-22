@@ -30,20 +30,6 @@ class Error(object):
     def __nonzero__(self):
         return False 
 
-class Cell(Markup):
-    """
-    Wraps a single cell to allow for null-checking
-    prior to string transformation.
-    """
-    def __new__(cls, base=u'', encoding=None, errors='strict'):
-        markup = Markup.__new__(cls, base, encoding, errors)
-        markup.is_null = base is None
-
-        return markup
-
-    def __nonzero__(self):
-        return (not self.is_null) and len(self) != 0
-
 class Row(object):
     """
     Wraps a row of copy for error handling.
@@ -67,12 +53,16 @@ class Row(object):
             if i >= len(self._row):
                 return Error('COPY.%s.%i.%i [column index outside range]' % (self._sheet.name, self._index, i))
 
-            return Cell(self._row[i])
+            value = self._row[i]
+
+            return Markup(value or '')
 
         if i not in self._columns:
             return Error('COPY.%s.%i.%s [column does not exist in sheet]' % (self._sheet.name, self._index, i))
 
-        return Cell(self._row[self._columns.index(i)])
+        value = self._row[self._columns.index(i)]
+
+        return Markup(value or '')
 
     def __iter__(self):
         return iter(self._row)
@@ -80,11 +70,16 @@ class Row(object):
     def __len__(self):
         return len(self._row)
 
-    def __repr__(self):
+    def __unicode__(self):
         if 'value' in self._columns:
-            return Cell(self._row[self._columns.index('value')])
+            value = self._row[self._columns.index('value')]
+
+            return Markup(value or '')
 
         return Error('COPY.%s.%s [no value column in sheet]' % (self._sheet.name, self._row[self._columns.index('key')])) 
+
+    def __html__(self):
+        return self.__unicode__()
 
     def __nonzero__(self):
         if 'value' in self._columns:
