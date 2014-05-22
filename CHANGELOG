@@ -1,6 +1,12 @@
+0.1.3
+-----
+
+
 0.1.2
 -----
 
+* Support null checking on cells. (#15)
+* Integrate markupsafe and elminate cell_class_wrapper.
 * Errors and rows can now test false. (#14)
 
 0.1.1
