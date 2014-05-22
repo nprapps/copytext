@@ -159,7 +159,13 @@ class MarkupTestCase(unittest.TestCase):
         copy = copytext.Copy('examples/test_copy.xlsx')
         self.sheet = copy['content']
 
-    def test_markup(self):
+    def test_markup_row(self):
+        row = self.sheet['footer_title']
+        
+        self.assertTrue(isinstance(row.__html__(), Markup))
+        self.assertEqual(row.__html__(), '<strong>This content goes to 12</strong>')
+
+    def test_markup_cell(self):
         cell = unicode(self.sheet['footer_title'])
 
         self.assertTrue(isinstance(cell, Markup))
