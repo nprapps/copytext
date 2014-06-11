@@ -46,7 +46,7 @@ class CopyTestCase(unittest.TestCase):
 
         self.assertIsInstance(example_list, list)
         self.assertIsInstance(example_list[0], list)
-        self.assertEqual(example_list[0], ['term', 'definition'])
+        self.assertEqual(example_list[0], ['jabberwocky', 'Invented or meaningless language; nonsense.'])
 
 class SheetTestCase(unittest.TestCase):
     """
@@ -114,12 +114,12 @@ class KeyValueRowTestCase(unittest.TestCase):
     def test_column_does_not_exist(self):
         error = self.row['foo']
         self.assertTrue(isinstance(error, copytext.Error))
-        self.assertEquals(error._error, 'COPY.content.1.foo [column does not exist in sheet]')
+        self.assertEquals(error._error, 'COPY.content.0.foo [column does not exist in sheet]')
 
     def test_column_index_outside_range(self):
         error = self.row[2]
         self.assertTrue(isinstance(error, copytext.Error))
-        self.assertEquals(error._error, 'COPY.content.1.2 [column index outside range]')
+        self.assertEquals(error._error, 'COPY.content.0.2 [column index outside range]')
 
     def test_row_truthiness(self):
         self.assertIs(True if self.sheet['foo'] else False, False)
@@ -134,13 +134,15 @@ class ListRowTestCase(unittest.TestCase):
         i = iter(self.sheet)
         row = i.next()
 
-        self.assertEqual(row[0], 'term')
-        self.assertEqual(row[1], 'definition')
-
-        row = i.next()
-
         self.assertEqual(row[0], 'jabberwocky')
         self.assertEqual(row[1], 'Invented or meaningless language; nonsense.')
+
+        i.next()
+        i.next()
+        i.next()
+
+        with self.assertRaises(StopIteration):
+            i.next()
 
     def test_row_truthiness(self):
         row = self.sheet[0]

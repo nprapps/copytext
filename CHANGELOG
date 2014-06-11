@@ -1,7 +1,7 @@
 0.1.4
 -----
 
-
+* Skip header row when iterating over rows in a sheet.
 
 0.1.3
 -----

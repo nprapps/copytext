@@ -168,6 +168,7 @@ class Copy(object):
 
                 if i == 0:
                     columns = row_data 
+                    continue
 
                 # If nothing in a row then it doesn't matter
                 if all([c is None for c in row_data]):
