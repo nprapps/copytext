@@ -184,14 +184,27 @@ class Copy(object):
         """
         import json
 
-        obj = {}    
+        obj = {}
     
         for name, sheet in self._copy.items():
-            if 'key' in sheet._columns:
+            if 'key' in sheet._columns and 'value' in sheet._columns:
                 obj[name] = {}
 
                 for row in sheet:
                     obj[name][row['key']] = row['value']
+            elif 'key' in sheet._columns:
+                obj[name] = {}
+
+                for row in sheet:
+                    obj[name][row['key']] = {}
+
+                    for column in sheet._columns:
+                        if column == 'key':
+                            continue
+
+                        value = row[column]
+
+                        obj[name][row['key']][column] = value
             else:
                 obj[name] = []
                 

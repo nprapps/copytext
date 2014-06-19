@@ -35,6 +35,7 @@ class CopyTestCase(unittest.TestCase):
         self.assertTrue('attribution' in data)
         self.assertTrue('content' in data)
         self.assertTrue('example_list' in data)
+        self.assertTrue('key_without_value' in data)
 
         attribution = data['attribution']
 
@@ -47,6 +48,12 @@ class CopyTestCase(unittest.TestCase):
         self.assertIsInstance(example_list, list)
         self.assertIsInstance(example_list[0], list)
         self.assertEqual(example_list[0], ['jabberwocky', 'Invented or meaningless language; nonsense.'])
+
+        key_without_value = data['key_without_value']
+
+        self.assertIsInstance(key_without_value, dict)
+        self.assertIsInstance(key_without_value['first-last'], dict)
+        self.assertEqual(key_without_value['first-last']['name'], 'first last')
 
 class SheetTestCase(unittest.TestCase):
     """

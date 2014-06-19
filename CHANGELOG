@@ -1,6 +1,7 @@
 0.1.5
 -----
 
+* Properly serialize rows with keys, but not values.
 
 0.1.4
 -----
