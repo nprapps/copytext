@@ -167,8 +167,6 @@ class Sheet(object):
 
                 obj.append(row_obj)
 
-                print json.dumps(obj)
-
         return json.dumps(obj)
 
 class Copy(object):
