@@ -130,6 +130,47 @@ class Sheet(object):
     def __len__(self):
         return len(self._sheet)
 
+    def json(self):
+        """
+        Serialize the sheet as JSON.
+        """
+        import json
+
+        obj = {}
+
+        if 'key' in self._columns and 'value' in self._columns:
+            for row in self:
+                obj[row['key']] = row['value']
+        elif 'key' in self._columns:
+            for row in self:
+                obj[row['key']] = {}
+
+                for column in self._columns:
+                    if column == 'key':
+                        continue
+
+                    value = row[column]
+
+                    obj[row['key']][column] = value
+        else:
+            obj = []
+            keys = []
+
+            for column in self._columns:
+                keys.append(column)
+
+            for row in self:
+                row_obj = {}
+
+                for i, column in enumerate(row):
+                    row_obj[keys[i]] = column
+
+                obj.append(row_obj)
+
+                print json.dumps(obj)
+
+        return json.dumps(obj)
+
 class Copy(object):
     """
     Wraps copy text, for multiple worksheets, for error handling.
