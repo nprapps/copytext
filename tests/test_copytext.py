@@ -31,7 +31,7 @@ class CopyTestCase(unittest.TestCase):
     def test_json(self):
         s = self.copy.json()
         data = json.loads(s)
-    
+
         self.assertTrue('attribution' in data)
         self.assertTrue('content' in data)
         self.assertTrue('example_list' in data)
@@ -60,8 +60,8 @@ class SheetTestCase(unittest.TestCase):
     Test the Sheet object.
     """
     def setUp(self):
-        copy = copytext.Copy('examples/test_copy.xlsx')
-        self.sheet = copy['content']
+        self.copy = copytext.Copy('examples/test_copy.xlsx')
+        self.sheet = self.copy['content']
 
     def test_row_by_key_item_index(self):
         row = self.sheet[1]
@@ -84,6 +84,28 @@ class SheetTestCase(unittest.TestCase):
         error = self.sheet[65]
         self.assertTrue(isinstance(error, copytext.Error))
         self.assertEquals(error._error, 'COPY.content.65 [row index outside range]')
+
+    def test_json(self):
+        s = self.copy['attribution'].json()
+        data = json.loads(s)
+
+        self.assertIsInstance(data, dict)
+        self.assertTrue('byline' in data)
+        self.assertEqual(data['byline'], u'Uñicodë')
+
+        s = self.copy['example_list'].json()
+        data = json.loads(s)
+
+        self.assertIsInstance(data, list)
+        self.assertIsInstance(data[0], dict)
+        self.assertEqual(data[0], {'term': 'jabberwocky', 'definition': 'Invented or meaningless language; nonsense.'})
+
+        s = self.copy['key_without_value'].json()
+        data = json.loads(s)
+
+        self.assertIsInstance(data, dict)
+        self.assertIsInstance(data['first-last'], dict)
+        self.assertEqual(data['first-last']['name'], 'first last')
 
 class KeyValueRowTestCase(unittest.TestCase):
     """
