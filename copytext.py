@@ -154,16 +154,12 @@ class Sheet(object):
                     obj[row['key']][column] = value
         else:
             obj = []
-            keys = []
-
-            for column in self._columns:
-                keys.append(column)
 
             for row in self:
                 row_obj = {}
 
                 for i, column in enumerate(row):
-                    row_obj[keys[i]] = column
+                    row_obj[self._columns[i]] = column
 
                 obj.append(row_obj)
 
