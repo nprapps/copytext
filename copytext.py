@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import json
+
 from markupsafe import Markup
 from openpyxl.reader.excel import load_workbook
 
@@ -130,12 +132,10 @@ class Sheet(object):
     def __len__(self):
         return len(self._sheet)
 
-    def json(self):
+    def _serialize(self):
         """
-        Serialize the sheet as JSON.
+        Serialize the sheet in a JSON-ready format.
         """
-        import json
-
         obj = {}
 
         if 'key' in self._columns and 'value' in self._columns:
@@ -163,7 +163,13 @@ class Sheet(object):
 
                 obj.append(row_obj)
 
-        return json.dumps(obj)
+        return obj 
+
+    def json(self):
+        """
+        Serialize the sheet as JSON.
+        """
+        return json.dumps(self._serialize())
 
 class Copy(object):
     """
@@ -222,28 +228,6 @@ class Copy(object):
         obj = {}
     
         for name, sheet in self._copy.items():
-            if 'key' in sheet._columns and 'value' in sheet._columns:
-                obj[name] = {}
-
-                for row in sheet:
-                    obj[name][row['key']] = row['value']
-            elif 'key' in sheet._columns:
-                obj[name] = {}
-
-                for row in sheet:
-                    obj[name][row['key']] = {}
-
-                    for column in sheet._columns:
-                        if column == 'key':
-                            continue
-
-                        value = row[column]
-
-                        obj[name][row['key']][column] = value
-            else:
-                obj[name] = []
-                
-                for row in sheet:
-                    obj[name].append(row._row)
+            obj[name] = sheet._serialize()
             
         return json.dumps(obj)
