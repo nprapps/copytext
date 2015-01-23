@@ -1,7 +1,8 @@
 0.1.6
 -----
 
-* Support serializing a Copy or Sheet object to JSON. 
+* Explicitly convert cells to text internally. (#16)
+* Support serializing a Copy or Sheet object to JSON. (#17) 
 
 0.1.5
 -----

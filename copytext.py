@@ -193,7 +193,7 @@ class Copy(object):
 
     def load(self):
         """
-        Parses the downloaded Excel file and writes it as JSON.
+        Parses the downloaded Excel file.
         """
         try:
             book = load_workbook(self._filename, data_only=True)
@@ -205,7 +205,7 @@ class Copy(object):
             rows = []
 
             for i, row in enumerate(sheet.rows):
-                row_data = [c.internal_value for c in row]
+                row_data = [None if c.internal_value is None else unicode(c.internal_value) for c in row]
 
                 if i == 0:
                     columns = row_data 
