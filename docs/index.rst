@@ -90,6 +90,12 @@ And here is code using this data:
 
     # You can have as many rows and columns as you want!
 
+    # Serialize a sheet to json
+    js = sheet.json()
+
+    # Serialize an entire workbook to json
+    js = copy.json()
+
 .. note::
 
     Copytext only understands ``xlsx`` files, and all cells must be converted to text formatting. Copytext does not grok dates or numbers.
@@ -131,6 +137,14 @@ copytext automatically marks all strings as safe (``Markup`` in Jinja parlance).
 .. note::
 
     Jinja templates automatically proxy attribute access to property access, which is why you see ``row.term`` instead of ``row['term']`` in these examples. This means you can also do ``row.0`` to access the first column.
+
+Need a JSON version of your copytext for the client?
+
+::
+
+    <script type="text/javascript">
+        var COPY = {{ COPY.json() }};
+    </script>
 
 License
 =======
