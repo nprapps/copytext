@@ -210,17 +210,42 @@ class Copy(object):
             rows = []
 
             for i, row in enumerate(sheet.rows):
-                row_data = [None if c.internal_value is None else unicode(c.internal_value) for c in row]
-
                 if i == 0:
-                    columns = row_data 
+                    for c in row:
+                        d = c.internal_value
+
+                        # Columns cease once an empty header is found
+                        if d is None:
+                            break
+
+                        columns.append(unicode(d))
+
                     continue
+
+                row_data = []
+
+                for c in row[0:len(columns)]:
+                    d = c.internal_value
+
+                    if d is None:
+                        row_data.append(None)
+                    else:
+                        row_data.append(unicode(d))
 
                 # If nothing in a row then it doesn't matter
                 if all([c is None for c in row_data]):
                     continue
 
-                rows.append(dict(zip(columns, row_data)))
+                clean_data = {}
+
+                # Don't include columns with None headers
+                for i, c in enumerate(columns):
+                    if c is None:
+                        continue
+
+                    clean_data[c] = row_data[i]
+
+                rows.append(clean_data)
 
             self._copy[sheet.title] = Sheet(sheet.title, rows, columns)
 

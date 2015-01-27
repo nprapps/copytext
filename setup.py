@@ -4,7 +4,7 @@ from setuptools import setup
 import sys
 
 install_requires = [
-    'openpyxl>=1.8.5',
+    'openpyxl>=2.1.4',
     'MarkupSafe>=0.21'
 ]
 

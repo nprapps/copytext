@@ -63,6 +63,9 @@ class SheetTestCase(unittest.TestCase):
         self.copy = copytext.Copy('examples/test_copy.xlsx')
         self.sheet = self.copy['content']
 
+    def test_column_count(self):
+        self.assertEqual(len(self.sheet._columns), 2)
+
     def test_row_by_key_item_index(self):
         row = self.sheet[1]
         self.assertTrue(isinstance(row, copytext.Row))
@@ -115,6 +118,10 @@ class KeyValueRowTestCase(unittest.TestCase):
         copy = copytext.Copy('examples/test_copy.xlsx')
         self.sheet = copy['content']
         self.row = self.sheet['header_title']
+
+    def test_column_count(self):
+        self.assertEqual(len(self.row._columns), 2)
+        self.assertEqual(len(self.row._row), 2)
 
     def test_cell_by_value_unicode(self):
         cell = unicode(self.row)
@@ -181,6 +188,23 @@ class ListRowTestCase(unittest.TestCase):
         row = self.sheet[100]
         
         self.assertIs(True if row else False, False)
+
+class GoogleDocsTestCase(unittest.TestCase):
+    """
+    Test with an XLSX from Google Doc's.
+    """
+    def setUp(self):
+        self.copy = copytext.Copy('examples/from_google.xlsx')
+
+    def test_column_count(self):
+        sheet = self.copy['data_bar']
+        
+        self.assertEqual(len(sheet._columns), 2)
+        
+        row = sheet[0]
+        
+        self.assertEqual(len(row._columns), 2)
+        self.assertEqual(len(row._row), 2)
 
 class MarkupTestCase(unittest.TestCase):
     """
