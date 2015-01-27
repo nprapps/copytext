@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from collections import OrderedDict
 import json
 
 from markupsafe import Markup
@@ -136,14 +137,14 @@ class Sheet(object):
         """
         Serialize the sheet in a JSON-ready format.
         """
-        obj = {}
+        obj = OrderedDict() 
 
         if 'key' in self._columns and 'value' in self._columns:
             for row in self:
                 obj[row['key']] = row['value']
         elif 'key' in self._columns:
             for row in self:
-                obj[row['key']] = {}
+                obj[row['key']] = OrderedDict() 
 
                 for column in self._columns:
                     if column == 'key':
@@ -156,7 +157,7 @@ class Sheet(object):
             obj = []
 
             for row in self:
-                row_obj = {}
+                row_obj = OrderedDict() 
 
                 for i, column in enumerate(row):
                     row_obj[self._columns[i]] = column

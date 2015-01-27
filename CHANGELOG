@@ -1,6 +1,8 @@
 0.1.7
 -----
 
+* Maintain column order in JSON keys
+
 0.1.6
 -----
 
