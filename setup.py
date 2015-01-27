@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 
 from setuptools import setup
+import sys
+
+install_requires = [
+    'openpyxl>=1.8.5',
+    'MarkupSafe>=0.21'
+]
+
+if sys.version_info < (2, 7):
+    install_requires.append('ordereddict>=1.1')
 
 setup(
     name='copytext',
@@ -23,8 +32,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     py_modules=['copytext'],
-    install_requires = [
-        'openpyxl>=1.8.5',
-        'MarkupSafe>=0.21'
-    ]
+    install_requires=install_requires
 )

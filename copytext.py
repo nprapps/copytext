@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
 import json
 
 from markupsafe import Markup
