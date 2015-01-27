@@ -226,7 +226,7 @@ class Copy(object):
         """
         import json
 
-        obj = {}
+        obj = OrderedDict() 
     
         for name, sheet in self._copy.items():
             obj[name] = sheet._serialize()
