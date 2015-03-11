@@ -180,11 +180,10 @@ class Copy(object):
     """
     Wraps copy text, for multiple worksheets, for error handling.
     """
-    _filename = ''
-    _copy = {}
 
     def __init__(self, filename):
         self._filename = filename
+        self._copy = {}
         self.load()
 
     def __getitem__(self, name):
@@ -249,15 +248,21 @@ class Copy(object):
 
             self._copy[sheet.title] = Sheet(sheet.title, rows, columns)
 
+    def _serialize(self):
+        """
+        Serialize the copy as an OrderedDict
+        """
+        obj = OrderedDict()
+
+        for name, sheet in self._copy.items():
+            obj[name] = sheet._serialize()
+
+        return obj
+
     def json(self):
         """
         Serialize the copy as JSON.
         """
         import json
 
-        obj = OrderedDict() 
-    
-        for name, sheet in self._copy.items():
-            obj[name] = sheet._serialize()
-            
-        return json.dumps(obj)
+        return json.dumps(self._serialize())
