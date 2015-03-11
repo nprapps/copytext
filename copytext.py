@@ -180,11 +180,10 @@ class Copy(object):
     """
     Wraps copy text, for multiple worksheets, for error handling.
     """
-    _filename = ''
-    _copy = {}
 
     def __init__(self, filename):
         self._filename = filename
+        self._copy = {}
         self.load()
 
     def __getitem__(self, name):
