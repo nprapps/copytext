@@ -13,7 +13,7 @@ if sys.version_info < (2, 7):
 
 setup(
     name='copytext',
-    version='0.1.9',
+    version='0.1.10',
     description='A library for accessing a spreadsheet as a native Python object suitable for templating.',
     long_description=open('README').read(),
     author='NPR Visuals Team',
