@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import json
+import six
 import unittest2 as unittest
 
-from markupsafe import Markup
+from six import string_types
 
 import copytext
 
@@ -124,8 +125,8 @@ class KeyValueRowTestCase(unittest.TestCase):
         self.assertEqual(len(self.row._row), 2)
 
     def test_cell_by_value_unicode(self):
-        cell = unicode(self.row)
-        self.assertTrue(isinstance(cell, Markup))
+        cell = str(self.row)
+        self.assertTrue(isinstance(cell, string_types))
         self.assertEqual(cell, 'Across-The-Top Header')
 
     def test_null_cell_value(self):
@@ -135,12 +136,12 @@ class KeyValueRowTestCase(unittest.TestCase):
 
     def test_cell_by_index(self):
         cell = self.row[1]
-        self.assertTrue(isinstance(cell, Markup))
+        self.assertTrue(isinstance(cell, string_types))
         self.assertEqual(cell, 'Across-The-Top Header')
 
     def test_cell_by_item_name(self):
         cell = self.row['value']
-        self.assertTrue(isinstance(cell, Markup))
+        self.assertTrue(isinstance(cell, string_types))
         self.assertEqual(cell, 'Across-The-Top Header')
 
     def test_cell_by_prop_name(self):
@@ -168,17 +169,17 @@ class ListRowTestCase(unittest.TestCase):
 
     def test_iteration(self):
         i = iter(self.sheet)
-        row = i.next()
+        row = six.next(i)
 
         self.assertEqual(row[0], 'jabberwocky')
         self.assertEqual(row[1], 'Invented or meaningless language; nonsense.')
 
-        i.next()
-        i.next()
-        i.next()
+        six.next(i)
+        six.next(i)
+        six.next(i)
 
         with self.assertRaises(StopIteration):
-            i.next()
+            six.next(i)
 
     def test_row_truthiness(self):
         row = self.sheet[0]
@@ -217,13 +218,15 @@ class MarkupTestCase(unittest.TestCase):
     def test_markup_row(self):
         row = self.sheet['footer_title']
         
-        self.assertTrue(isinstance(row.__html__(), Markup))
+        self.assertTrue(isinstance(row.__html__(), string_types))
         self.assertEqual(row.__html__(), '<strong>This content goes to 12</strong>')
 
     def test_markup_cell(self):
-        cell = unicode(self.sheet['footer_title'])
+        cell = self.sheet['footer_title'].__str__()
+        print(type(cell))
 
-        self.assertTrue(isinstance(cell, Markup))
+
+        self.assertTrue(isinstance(cell, string_types))
         self.assertEqual(cell, '<strong>This content goes to 12</strong>')
 
 class CellTypeTestCase(unittest.TestCase):
@@ -240,13 +243,13 @@ class CellTypeTestCase(unittest.TestCase):
 
     def test_date(self):
         row = self.sheet['pubdate']
-        val = unicode(row)
+        val = str(row)
 
         self.assertEquals(val, '1/22/2013')
 
     def test_time(self):
         row = self.sheet['pubtime']
-        val = unicode(row)
+        val = str(row)
 
         self.assertEqual(val, '3:37 AM')
 
@@ -269,12 +272,12 @@ class ErrorTestCase(unittest.TestCase):
 
     def test_iter(self):
         i = iter(self.error)
-        child_error = i.next()
+        child_error = six.next(i)
         self.assertIs(child_error, self.error)
         self.assertEqual(str(child_error), 'foobar')
 
         with self.assertRaises(StopIteration):
-            i.next()
+            six.next(i)
 
     def test_len(self):
         self.assertEqual(len(self.error), 1)

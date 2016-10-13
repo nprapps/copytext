@@ -1,13 +1,12 @@
 #!/usr/bin/env python
-
 try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
 
 import json
+import six
 
-from markupsafe import Markup
 from openpyxl.reader.excel import load_workbook
 
 class CopyException(Exception):
@@ -34,9 +33,13 @@ class Error(object):
     def __repr__(self):
         return self._error
 
+    def __bool__(self):
+        return False 
+
     def __nonzero__(self):
         return False 
 
+@six.python_2_unicode_compatible
 class Row(object):
     """
     Wraps a row of copy for error handling.
@@ -62,14 +65,20 @@ class Row(object):
 
             value = self._row[i]
 
-            return Markup(value or '')
+            if six.PY3:
+                return str(value or '')
+            else:
+                return unicode(value or '')
 
         if i not in self._columns:
             return Error('COPY.%s.%i.%s [column does not exist in sheet]' % (self._sheet.name, self._index, i))
 
         value = self._row[self._columns.index(i)]
 
-        return Markup(value or '')
+        if six.PY3:
+            return str(value or '')
+        else:
+            return unicode(value or '')
 
     def __iter__(self):
         return iter(self._row)
@@ -77,16 +86,26 @@ class Row(object):
     def __len__(self):
         return len(self._row)
 
-    def __unicode__(self):
+    def __str__(self):
         if 'value' in self._columns:
             value = self._row[self._columns.index('value')]
-
-            return Markup(value or '')
+            return str(value or '')
 
         return Error('COPY.%s.%s [no value column in sheet]' % (self._sheet.name, self._row[self._columns.index('key')])) 
 
     def __html__(self):
-        return self.__unicode__()
+        return self.__str__()
+
+    def __bool__(self):
+        if 'value' in self._columns:
+            val = self._row[self._columns.index('value')]
+
+            if not val:
+                return False 
+
+            return bool(len(val))
+    
+        return True
 
     def __nonzero__(self):
         if 'value' in self._columns:
@@ -95,7 +114,7 @@ class Row(object):
             if not val:
                 return False 
 
-            return len(val)
+            return bool(len(val))
     
         return True
 
@@ -217,7 +236,10 @@ class Copy(object):
                         if d is None:
                             break
 
-                        columns.append(unicode(d))
+                        if six.PY3: 
+                            columns.append(str(d))
+                        else:
+                            columns.append(unicode(d))
 
                     continue
 
@@ -229,7 +251,10 @@ class Copy(object):
                     if d is None:
                         row_data.append(None)
                     else:
-                        row_data.append(unicode(d))
+                        if six.PY3:
+                            row_data.append(str(d))
+                        else:
+                            row_data.append(unicode(d))
 
                 # If nothing in a row then it doesn't matter
                 if all([c is None for c in row_data]):
