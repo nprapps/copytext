@@ -1,20 +1,21 @@
 #!/usr/bin/env python
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 
 import json
 import six
 
 from openpyxl.reader.excel import load_workbook
 
+
 class CopyException(Exception):
     pass
 
+
 class Error(object):
     """
-    An error object that can mimic the structure of the COPY data, whether the error happens at the Copy, Sheet or Row level. Will print the error whenever it gets repr'ed. 
+    An error object that can mimic the structure of the COPY data,
+    whether the error happens at the Copy, Sheet or Row level.
+    Will print the error whenever it gets repr'ed.
     """
     _error = ''
 
@@ -23,7 +24,7 @@ class Error(object):
 
     def __getitem__(self, i):
         return self
-    
+
     def __iter__(self):
         return iter([self])
 
@@ -34,10 +35,11 @@ class Error(object):
         return self._error
 
     def __bool__(self):
-        return False 
+        return False
 
     def __nonzero__(self):
-        return False 
+        return False
+
 
 @six.python_2_unicode_compatible
 class Row(object):
@@ -61,7 +63,10 @@ class Row(object):
         """
         if isinstance(i, int):
             if i >= len(self._row):
-                return Error('COPY.%s.%i.%i [column index outside range]' % (self._sheet.name, self._index, i))
+                return Error('COPY.%s.%i.%i [column index outside range]' % (
+                    self._sheet.name,
+                    self._index, i
+                ))
 
             value = self._row[i]
 
@@ -71,7 +76,11 @@ class Row(object):
                 return unicode(value or '')
 
         if i not in self._columns:
-            return Error('COPY.%s.%i.%s [column does not exist in sheet]' % (self._sheet.name, self._index, i))
+            return Error('COPY.%s.%i.%s [column does not exist in sheet]' % (
+                self._sheet.name,
+                self._index,
+                i
+            ))
 
         value = self._row[self._columns.index(i)]
 
@@ -91,7 +100,10 @@ class Row(object):
             value = self._row[self._columns.index('value')]
             return str(value or '')
 
-        return Error('COPY.%s.%s [no value column in sheet]' % (self._sheet.name, self._row[self._columns.index('key')])) 
+        return Error('COPY.%s.%s [no value column in sheet]' % (
+            self._sheet.name,
+            self._row[self._columns.index('key')]
+        ))
 
     def __html__(self):
         return self.__str__()
@@ -101,10 +113,10 @@ class Row(object):
             val = self._row[self._columns.index('value')]
 
             if not val:
-                return False 
+                return False
 
             return bool(len(val))
-    
+
         return True
 
     def __nonzero__(self):
@@ -112,11 +124,12 @@ class Row(object):
             val = self._row[self._columns.index('value')]
 
             if not val:
-                return False 
+                return False
 
             return bool(len(val))
-    
+
         return True
+
 
 class Sheet(object):
     """
@@ -128,27 +141,40 @@ class Sheet(object):
 
     def __init__(self, name, data, columns):
         self.name = name
-        self._sheet = [Row(self, [row[c] for c in columns], columns, i) for i, row in enumerate(data)]
+        self._sheet = [
+            Row(self, [row[c] for c in columns], columns, i)
+            for i, row in enumerate(data)
+        ]
         self._columns = columns
 
     def __getitem__(self, i):
         """
-        Allow dict-style item access by index (row id), or by row name ("key" column).
+        Allow dict-style item access by index (row id), or by
+        row name ("key" column).
         """
         if isinstance(i, int):
             if i >= len(self._sheet):
-                return Error('COPY.%s.%i [row index outside range]' % (self.name, i))
+                return Error('COPY.%s.%i [row index outside range]' % (
+                    self.name,
+                    i
+                ))
 
             return self._sheet[i]
 
         if 'key' not in self._columns:
-            return Error('COPY.%s.%s [no key column in sheet]' % (self.name, i))
+            return Error('COPY.%s.%s [no key column in sheet]' % (
+                self.name,
+                i
+            ))
 
         for row in self._sheet:
             if row['key'] == i:
-                return row 
+                return row
 
-        return Error('COPY.%s.%s [key does not exist in sheet]' % (self.name, i))
+        return Error('COPY.%s.%s [key does not exist in sheet]' % (
+            self.name,
+            i
+        ))
 
     def __iter__(self):
         return iter(self._sheet)
@@ -160,14 +186,14 @@ class Sheet(object):
         """
         Serialize the sheet in a JSON-ready format.
         """
-        obj = OrderedDict() 
+        obj = OrderedDict()
 
         if 'key' in self._columns and 'value' in self._columns:
             for row in self:
                 obj[row['key']] = row['value']
         elif 'key' in self._columns:
             for row in self:
-                obj[row['key']] = OrderedDict() 
+                obj[row['key']] = OrderedDict()
 
                 for column in self._columns:
                     if column == 'key':
@@ -180,20 +206,21 @@ class Sheet(object):
             obj = []
 
             for row in self:
-                row_obj = OrderedDict() 
+                row_obj = OrderedDict()
 
                 for i, column in enumerate(row):
                     row_obj[self._columns[i]] = column
 
                 obj.append(row_obj)
 
-        return obj 
+        return obj
 
     def json(self):
         """
         Serialize the sheet as JSON.
         """
         return json.dumps(self._serialize())
+
 
 class Copy(object):
     """
@@ -221,7 +248,10 @@ class Copy(object):
         try:
             book = load_workbook(self._filename, data_only=True)
         except IOError:
-            raise CopyException('"%s" does not exist. Have you run "fab update_copy"?' % self._filename)
+            raise CopyException(
+                '"%s" does not exist. Have you run "fab update_copy"?'
+                % self._filename
+            )
 
         for sheet in book:
             columns = []
@@ -236,7 +266,7 @@ class Copy(object):
                         if d is None:
                             break
 
-                        if six.PY3: 
+                        if six.PY3:
                             columns.append(str(d))
                         else:
                             columns.append(unicode(d))

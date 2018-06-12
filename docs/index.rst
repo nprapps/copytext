@@ -5,7 +5,7 @@ copytext |release|
 About
 =====
 
-.. include:: ../README
+.. include:: ../README.md
 
 Installation
 ============
@@ -149,7 +149,7 @@ Need a JSON version of your copytext for the client?
 License
 =======
 
-.. include:: ../COPYING
+.. include:: ../LICENSE
 
 Changelog
 =========
